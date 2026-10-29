@@ -74,7 +74,17 @@ CREATE OR ALTER PROCEDURE dbo.ObtenerCatalogoHabilidades
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT ID, Nombre FROM dbo.Habilidad ORDER BY Nombre;
+    SELECT h.ID, h.Nombre, h.IDSector, s.Nombre AS Sector
+    FROM dbo.Habilidad h JOIN dbo.Sector s ON s.ID = h.IDSector
+    ORDER BY s.Orden, s.Nombre, h.Nombre;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ObtenerSectores
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT ID, Nombre FROM dbo.Sector ORDER BY Orden, Nombre;
 END
 GO
 
