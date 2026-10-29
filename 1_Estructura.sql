@@ -122,13 +122,26 @@ CREATE TABLE dbo.Preferencia
 );
 GO
 
-IF OBJECT_ID(N'dbo.Habilidad', N'U') IS NULL
-CREATE TABLE dbo.Habilidad
+IF OBJECT_ID(N'dbo.Sector', N'U') IS NULL
+CREATE TABLE dbo.Sector
 (
     ID     INT IDENTITY(1, 1) NOT NULL,
     Nombre NVARCHAR(60) NOT NULL,
+    Orden  INT NOT NULL CONSTRAINT DF_Sector_Orden DEFAULT (0),
+    CONSTRAINT PK_Sector PRIMARY KEY (ID),
+    CONSTRAINT UQ_Sector_Nombre UNIQUE (Nombre)
+);
+GO
+
+IF OBJECT_ID(N'dbo.Habilidad', N'U') IS NULL
+CREATE TABLE dbo.Habilidad
+(
+    ID       INT IDENTITY(1, 1) NOT NULL,
+    Nombre   NVARCHAR(60) NOT NULL,
+    IDSector INT NULL,
     CONSTRAINT PK_Habilidad PRIMARY KEY (ID),
-    CONSTRAINT UQ_Habilidad_Nombre UNIQUE (Nombre)
+    CONSTRAINT UQ_Habilidad_Nombre UNIQUE (Nombre),
+    CONSTRAINT FK_Habilidad_Sector FOREIGN KEY (IDSector) REFERENCES dbo.Sector (ID)
 );
 GO
 
@@ -396,6 +409,8 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_OfertaLaboral_IDUsuar
     CREATE INDEX IX_OfertaLaboral_IDUsuario_Publicador ON dbo.OfertaLaboral (IDUsuario_Publicador);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Favorito_IDUsuario')
     CREATE INDEX IX_Favorito_IDUsuario ON dbo.Favorito (IDUsuario);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Habilidad_IDSector')
+    CREATE INDEX IX_Habilidad_IDSector ON dbo.Habilidad (IDSector);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_RecuperacionClave_IDUsuario')
     CREATE INDEX IX_RecuperacionClave_IDUsuario ON dbo.RecuperacionClave (IDUsuario, Fecha);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_FavoritoOferta_IDOfertaLaboral')
