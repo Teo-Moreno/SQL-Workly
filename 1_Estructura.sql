@@ -12,13 +12,14 @@ GO
 
 USE Workly;
 GO
+
 IF OBJECT_ID(N'dbo.Pais', N'U') IS NULL
 CREATE TABLE dbo.Pais
 (
     ID              INT IDENTITY(1, 1) NOT NULL,
     Nombre          NVARCHAR(60) NOT NULL,
-    Codigo_ISO      CHAR(2)      NOT NULL, 
-    Codigo_Telefono NVARCHAR(5)  NOT NULL, 
+    Codigo_ISO      CHAR(2)      NOT NULL,
+    Codigo_Telefono NVARCHAR(5)  NOT NULL,
     CONSTRAINT PK_Pais PRIMARY KEY (ID),
     CONSTRAINT UQ_Pais_Nombre UNIQUE (Nombre)
 );
@@ -43,10 +44,10 @@ CREATE TABLE dbo.Usuario
     Nombre         NVARCHAR(50)  NOT NULL,
     Apellido       NVARCHAR(50)  NOT NULL,
     Email          NVARCHAR(100) NOT NULL,
-    [Contraseña]   NVARCHAR(200) NULL, 
+    [Contraseña]   NVARCHAR(200) NULL,
     Fecha_Registro DATE NOT NULL CONSTRAINT DF_Usuario_Fecha_Registro DEFAULT (CAST(GETDATE() AS DATE)),
     Tipo           NVARCHAR(10) NOT NULL CONSTRAINT DF_Usuario_Tipo DEFAULT (N'Persona'),
-    Es_Moderador   BIT NOT NULL CONSTRAINT DF_Usuario_Es_Moderador DEFAULT (0), 
+    Es_Moderador   BIT NOT NULL CONSTRAINT DF_Usuario_Es_Moderador DEFAULT (0),
     CONSTRAINT PK_Usuario PRIMARY KEY (ID),
     CONSTRAINT UQ_Usuario_Email UNIQUE (Email),
     CONSTRAINT CK_Usuario_Tipo CHECK (Tipo IN (N'Persona', N'Empresa'))
@@ -58,8 +59,8 @@ CREATE TABLE dbo.LoginExterno
 (
     ID         INT IDENTITY(1, 1) NOT NULL,
     IDUsuario  INT NOT NULL,
-    Proveedor  NVARCHAR(20)  NOT NULL, 
-    ID_Externo NVARCHAR(200) NOT NULL, 
+    Proveedor  NVARCHAR(20)  NOT NULL,
+    ID_Externo NVARCHAR(200) NOT NULL,
     CONSTRAINT PK_LoginExterno PRIMARY KEY (ID),
     CONSTRAINT UQ_LoginExterno UNIQUE (Proveedor, ID_Externo),
     CONSTRAINT FK_LoginExterno_Usuario FOREIGN KEY (IDUsuario) REFERENCES dbo.Usuario (ID) ON DELETE CASCADE
@@ -104,11 +105,11 @@ CREATE TABLE dbo.Preferencia
     ID             INT IDENTITY(1, 1) NOT NULL,
     IDUsuario      INT NOT NULL,
     Puesto_Buscado NVARCHAR(100) NULL,
-    Niveles        NVARCHAR(100) NULL, 
-    Modalidades    NVARCHAR(60)  NULL, 
+    Niveles        NVARCHAR(100) NULL,
+    Modalidades    NVARCHAR(60)  NULL,
     Jornada        NVARCHAR(20)  NULL,
     Contratacion   NVARCHAR(40)  NULL,
-    IDProvincia    INT NULL, 
+    IDProvincia    INT NULL,
     Salario_Minimo INT NULL,
     Salario_Maximo INT NULL,
     Disponibilidad NVARCHAR(20)  NULL,
@@ -188,14 +189,13 @@ CREATE TABLE dbo.UsuarioEducacion
     IDEducacion  INT NOT NULL,
     Titulo       NVARCHAR(150) NOT NULL,
     Fecha_Inicio DATE NOT NULL,
-    Fecha_Fin    DATE NULL, -- NULL = en curso
+    Fecha_Fin    DATE NULL,
     CONSTRAINT PK_UsuarioEducacion PRIMARY KEY (ID),
     CONSTRAINT FK_UsuarioEducacion_Usuario FOREIGN KEY (IDUsuario) REFERENCES dbo.Usuario (ID) ON DELETE CASCADE,
     CONSTRAINT FK_UsuarioEducacion_Educacion FOREIGN KEY (IDEducacion) REFERENCES dbo.Educacion (ID),
     CONSTRAINT CK_UsuarioEducacion_Fechas CHECK (Fecha_Fin IS NULL OR Fecha_Fin >= Fecha_Inicio)
 );
 GO
-
 
 IF OBJECT_ID(N'dbo.Empresa', N'U') IS NULL
 CREATE TABLE dbo.Empresa
@@ -204,11 +204,11 @@ CREATE TABLE dbo.Empresa
     Nombre         NVARCHAR(100) NOT NULL,
     Descripcion    NVARCHAR(500) NULL,
     Logo           NVARCHAR(260) NULL,
-    Ubicacion      NVARCHAR(100) NULL, 
+    Ubicacion      NVARCHAR(100) NULL,
     Sitio_Web      NVARCHAR(200) NULL,
-    IDUsuario      INT NULL,           
+    IDUsuario      INT NULL,
     Razon_Social   NVARCHAR(150) NULL,
-    CUIT           CHAR(11) NULL,      
+    CUIT           CHAR(11) NULL,
     Rubro          NVARCHAR(60) NULL,
     IDProvincia    INT NULL,
     Telefono       NVARCHAR(30) NULL,
@@ -229,7 +229,7 @@ CREATE TABLE dbo.ExperienciaLaboral
     Puesto             NVARCHAR(100) NOT NULL,
     Descripcion        NVARCHAR(500) NULL,
     Fecha_Inicio       DATE NOT NULL,
-    Fecha_Finalizacion DATE NULL, 
+    Fecha_Finalizacion DATE NULL,
     CONSTRAINT PK_ExperienciaLaboral PRIMARY KEY (ID),
     CONSTRAINT FK_ExperienciaLaboral_Usuario FOREIGN KEY (IDUsuario) REFERENCES dbo.Usuario (ID) ON DELETE CASCADE,
     CONSTRAINT FK_ExperienciaLaboral_Empresa FOREIGN KEY (IDEmpresa) REFERENCES dbo.Empresa (ID),
@@ -247,7 +247,7 @@ CREATE TABLE dbo.OfertaLaboral
     Ubicacion            NVARCHAR(100)  NULL,
     Modalidad            NVARCHAR(20)   NOT NULL,
     Tipo_Contrato        NVARCHAR(50)   NOT NULL,
-    Salario              INT NULL, 
+    Salario              INT NULL,
     Cantidad_Puestos     INT NOT NULL CONSTRAINT DF_OfertaLaboral_Cantidad_Puestos DEFAULT (1),
     Fecha_Publicacion    DATE NOT NULL CONSTRAINT DF_OfertaLaboral_Fecha_Publicacion DEFAULT (CAST(GETDATE() AS DATE)),
     Fecha_Cierre         DATE NULL,
@@ -292,7 +292,6 @@ CREATE TABLE dbo.OfertaPuesto
 );
 GO
 
-
 IF OBJECT_ID(N'dbo.OfertaExterna', N'U') IS NULL
 CREATE TABLE dbo.OfertaExterna
 (
@@ -307,7 +306,7 @@ CREATE TABLE dbo.OfertaExterna
     Tipo_Contrato     NVARCHAR(50)   NULL,
     Salario           NVARCHAR(100)  NULL,
     Link_Postulacion  NVARCHAR(2000) NULL,
-    Publicador        NVARCHAR(100)  NULL, 
+    Publicador        NVARCHAR(100)  NULL,
     Fecha_Publicacion DATETIME2 NULL,
     Fecha_Consulta    DATETIME2 NOT NULL CONSTRAINT DF_OfertaExterna_Fecha_Consulta DEFAULT (SYSUTCDATETIME()),
     CONSTRAINT PK_OfertaExterna PRIMARY KEY (ID),
@@ -331,11 +330,15 @@ CREATE TABLE dbo.FavoritoOferta
 (
     ID              INT IDENTITY(1, 1) NOT NULL,
     IDFavorito      INT NOT NULL,
-    IDOfertaLaboral INT NOT NULL,
+    IDOfertaLaboral INT NULL,
+    IDOfertaExterna INT NULL,
     CONSTRAINT PK_FavoritoOferta PRIMARY KEY (ID),
-    CONSTRAINT UQ_FavoritoOferta UNIQUE (IDFavorito, IDOfertaLaboral),
+    CONSTRAINT UQ_FavoritoOferta_IDFavorito UNIQUE (IDFavorito),
     CONSTRAINT FK_FavoritoOferta_Favorito FOREIGN KEY (IDFavorito) REFERENCES dbo.Favorito (ID_favorito) ON DELETE CASCADE,
-    CONSTRAINT FK_FavoritoOferta_OfertaLaboral FOREIGN KEY (IDOfertaLaboral) REFERENCES dbo.OfertaLaboral (ID)
+    CONSTRAINT FK_FavoritoOferta_OfertaLaboral FOREIGN KEY (IDOfertaLaboral) REFERENCES dbo.OfertaLaboral (ID),
+    CONSTRAINT FK_FavoritoOferta_OfertaExterna FOREIGN KEY (IDOfertaExterna) REFERENCES dbo.OfertaExterna (ID),
+    CONSTRAINT CK_FavoritoOferta_Oferta CHECK ((IDOfertaLaboral IS NULL AND IDOfertaExterna IS NOT NULL)
+                                            OR (IDOfertaLaboral IS NOT NULL AND IDOfertaExterna IS NULL))
 );
 GO
 
@@ -378,6 +381,10 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_OfertaLaboral_IDUsuar
     CREATE INDEX IX_OfertaLaboral_IDUsuario_Publicador ON dbo.OfertaLaboral (IDUsuario_Publicador);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Favorito_IDUsuario')
     CREATE INDEX IX_Favorito_IDUsuario ON dbo.Favorito (IDUsuario);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_FavoritoOferta_IDOfertaLaboral')
+    CREATE INDEX IX_FavoritoOferta_IDOfertaLaboral ON dbo.FavoritoOferta (IDOfertaLaboral);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_FavoritoOferta_IDOfertaExterna')
+    CREATE INDEX IX_FavoritoOferta_IDOfertaExterna ON dbo.FavoritoOferta (IDOfertaExterna);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Postulacion_IDOfertaLaboral')
     CREATE INDEX IX_Postulacion_IDOfertaLaboral ON dbo.Postulacion (IDOfertaLaboral);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Perfil_IDProvincia')
